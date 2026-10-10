@@ -178,7 +178,7 @@ Vite will display the local URL in the terminal, usually `http://localhost:5173`
 
 ## Live Demo and Repository
 
-- **Live URL:** [MovieVault](https://movievault-9swe.onrender.com/login)
+- **Live URL:** [MovieVault](https://movievault-9swe.onrender.com)
 - **GitHub Repository:** [MovieVault on GitHub](https://github.com/simranrawat2k/MovieVault)
 
 
