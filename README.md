@@ -63,7 +63,7 @@ Variables used by the backend include:
 
 - `PORT` — the port used by the Express server.
 - `CLIENT_URL` — the frontend origin allowed by CORS.
-- `MONGODB_URI` — the MongoDB connection string.
+- `MONGO_URI` — the MongoDB connection string.
 - `JWT_SECRET` — the secret used to sign and verify authentication tokens.
 - `BREVO_API_KEY` — the API key used to send emails through Brevo.
 - `RAPIDAPI_KEY` — the RapidAPI key.
@@ -126,7 +126,7 @@ Movie data is cached in the browser's session storage to reduce repeated request
 ### 1. Clone the repository
 
 ```bash
-git clone <YOUR_REPOSITORY_URL>
+git clone https://github.com/simranrawat2k/MovieVault.git
 cd movievault
 ```
 
@@ -178,8 +178,9 @@ Vite will display the local URL in the terminal, usually `http://localhost:5173`
 
 ## Live Demo and Repository
 
-- **Live URL:** To be added.
-- **GitHub Repository:** To be added.
+- **Live URL:** [MovieVault](https://movievault-9swe.onrender.com/login)
+- **GitHub Repository:** [MovieVault on GitHub](https://github.com/simranrawat2k/MovieVault)
+
 
 ## Known Limitations and Trade-offs
 
