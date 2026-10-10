@@ -1,0 +1,1024 @@
+
+import { useMemo, useState } from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import {
+  FaFilm,
+  FaSearch,
+  FaHeart,
+  FaStar,
+  FaBookmark,
+  FaChevronLeft,
+  FaChevronRight,
+  FaUserCircle,
+  FaPlay,
+} from "react-icons/fa";
+
+const moviesData = [
+  {
+    id: 1,
+    title: "Beyond the Stars",
+    year: 2025,
+    genre: "Sci-Fi",
+    rating: 8.4,
+    description: "A journey into the unknown.",
+    poster:
+      "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 2,
+    title: "Midnight Shadows",
+    year: 2024,
+    genre: "Thriller",
+    rating: 7.9,
+    description: "Every secret leaves a trace.",
+    poster:
+      "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 3,
+    title: "Kingdom of Dust",
+    year: 2025,
+    genre: "Action",
+    rating: 8.1,
+    description: "A kingdom worth fighting for.",
+    poster:
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    title: "Summer Memories",
+    year: 2023,
+    genre: "Romance",
+    rating: 7.6,
+    description: "Some moments last forever.",
+    poster:
+      "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 5,
+    title: "The Deep",
+    year: 2024,
+    genre: "Adventure",
+    rating: 8.2,
+    description: "Discover what lies beneath.",
+    poster:
+      "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 6,
+    title: "Neon City",
+    year: 2025,
+    genre: "Sci-Fi",
+    rating: 8.7,
+    description: "The future has a dark side.",
+    poster:
+      "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 7,
+    title: "Wild Horizons",
+    year: 2022,
+    genre: "Adventure",
+    rating: 7.8,
+    description: "Beyond the edge of the map.",
+    poster:
+      "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 8,
+    title: "Final Hour",
+    year: 2024,
+    genre: "Action",
+    rating: 8.0,
+    description: "One choice changes everything.",
+    poster:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 9,
+    title: "Hidden Truth",
+    year: 2023,
+    genre: "Thriller",
+    rating: 7.7,
+    description: "Nothing is what it seems.",
+    poster:
+      "https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=600&auto=format&fit=crop",
+  },
+  {
+    id: 10,
+    title: "Golden Hour",
+    year: 2025,
+    genre: "Romance",
+    rating: 8.3,
+    description: "A story written in the stars.",
+    poster:
+      "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=600&auto=format&fit=crop",
+  },
+];
+
+const genres = [
+  "All Movies",
+  "Action",
+  "Adventure",
+  "Romance",
+  "Sci-Fi",
+  "Thriller",
+];
+
+function Movies() {
+  const [search, setSearch] = useState("");
+  const [activeGenre, setActiveGenre] = useState("All Movies");
+  const [savedMovies, setSavedMovies] = useState([]);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const moviesPerPage = 8;
+
+  const filteredMovies = useMemo(() => {
+    return moviesData.filter((movie) => {
+      const matchesSearch =
+        movie.title.toLowerCase().includes(search.toLowerCase()) ||
+        movie.genre.toLowerCase().includes(search.toLowerCase());
+
+      const matchesGenre =
+        activeGenre === "All Movies" || movie.genre === activeGenre;
+
+      const matchesSaved =
+        !showSavedOnly || savedMovies.includes(movie.id);
+
+      return matchesSearch && matchesGenre && matchesSaved;
+    });
+  }, [search, activeGenre, showSavedOnly, savedMovies]);
+
+  const totalPages = Math.ceil(filteredMovies.length / moviesPerPage);
+
+  const visibleMovies = filteredMovies.slice(
+    (currentPage - 1) * moviesPerPage,
+    currentPage * moviesPerPage
+  );
+
+  const toggleSaved = (movieId) => {
+    setSavedMovies((previous) =>
+      previous.includes(movieId)
+        ? previous.filter((id) => id !== movieId)
+        : [...previous, movieId]
+    );
+  };
+
+  const changeGenre = (genre) => {
+    setActiveGenre(genre);
+    setCurrentPage(1);
+  };
+
+  const changeSearch = (value) => {
+    setSearch(value);
+    setCurrentPage(1);
+  };
+
+  return (
+    <Page>
+      <Navbar>
+        <NavInner>
+          <Brand to="/movies">
+            <Logo>
+              <FaFilm />
+            </Logo>
+            <BrandName>
+              Movie<span>Vault</span>
+            </BrandName>
+          </Brand>
+
+          <NavLinks>
+            <NavLink $active to="/movies">
+              Discover
+            </NavLink>
+
+            <NavButton
+              $active={showSavedOnly}
+              onClick={() => {
+                setShowSavedOnly(!showSavedOnly);
+                setCurrentPage(1);
+              }}
+            >
+              <FaBookmark />
+              My Collection
+              {savedMovies.length > 0 && (
+                <SavedCount>{savedMovies.length}</SavedCount>
+              )}
+            </NavButton>
+          </NavLinks>
+
+          <ProfileIcon title="Account">
+            <FaUserCircle />
+          </ProfileIcon>
+        </NavInner>
+      </Navbar>
+
+      <Main>
+        <Hero>
+          <HeroContent>
+            <Eyebrow>
+              <FaPlay /> YOUR NEXT MOVIE NIGHT STARTS HERE
+            </Eyebrow>
+
+            <HeroTitle>
+              Discover your next
+              <GradientText> favourite film.</GradientText>
+            </HeroTitle>
+
+            <HeroDescription>
+              Explore movies, find hidden gems, and keep your favourites
+              all in one place.
+            </HeroDescription>
+
+            <SearchBox>
+              <FaSearch />
+              <SearchInput
+                type="search"
+                placeholder="Search movies or genres..."
+                value={search}
+                onChange={(e) => changeSearch(e.target.value)}
+              />
+              {search && (
+                <ClearButton onClick={() => changeSearch("")}>
+                  Clear
+                </ClearButton>
+              )}
+            </SearchBox>
+          </HeroContent>
+
+          <HeroDecoration>
+            <DecorationCircle />
+            <DecorationFilm>
+              <FaFilm />
+            </DecorationFilm>
+            <DecorationText>YOUR CINEMA. YOUR WORLD.</DecorationText>
+          </HeroDecoration>
+        </Hero>
+
+        <SectionHeader>
+          <div>
+            <SectionTitle>
+              {showSavedOnly ? "My Collection" : "Explore Movies"}
+            </SectionTitle>
+            <SectionDescription>
+              {filteredMovies.length}{" "}
+              {filteredMovies.length === 1 ? "movie" : "movies"} to discover
+            </SectionDescription>
+          </div>
+        </SectionHeader>
+
+        <GenreList>
+          {genres.map((genre) => (
+            <GenreButton
+              key={genre}
+              $active={activeGenre === genre}
+              onClick={() => changeGenre(genre)}
+            >
+              {genre}
+            </GenreButton>
+          ))}
+        </GenreList>
+
+        {visibleMovies.length > 0 ? (
+          <MovieGrid>
+            {visibleMovies.map((movie) => {
+              const isSaved = savedMovies.includes(movie.id);
+
+              return (
+                <MovieCard key={movie.id}>
+                  <PosterWrapper>
+                    <Poster
+                      src={movie.poster}
+                      alt={`${movie.title} poster`}
+                      loading="lazy"
+                    />
+
+                    <PosterOverlay />
+
+                    <Rating>
+                      <FaStar />
+                      {movie.rating}
+                    </Rating>
+
+                    <SaveButton
+                      $saved={isSaved}
+                      title={isSaved ? "Remove from collection" : "Save movie"}
+                      aria-label={
+                        isSaved ? "Remove saved movie" : "Save movie"
+                      }
+                      onClick={() => toggleSaved(movie.id)}
+                    >
+                      <FaHeart />
+                    </SaveButton>
+
+                    <PosterBottom>
+                      <GenreTag>{movie.genre}</GenreTag>
+                    </PosterBottom>
+                  </PosterWrapper>
+
+                  <MovieInfo>
+                    <MovieTitle>{movie.title}</MovieTitle>
+
+                    <MovieMeta>
+                      <span>{movie.year}</span>
+                      <MetaDot />
+                      <span>{movie.genre}</span>
+                    </MovieMeta>
+
+                    <MovieDescription>
+                      {movie.description}
+                    </MovieDescription>
+                  </MovieInfo>
+                </MovieCard>
+              );
+            })}
+          </MovieGrid>
+        ) : (
+          <EmptyState>
+            <EmptyIcon>
+              <FaFilm />
+            </EmptyIcon>
+            <EmptyTitle>
+              {showSavedOnly ? "Your collection is empty" : "No movies found"}
+            </EmptyTitle>
+            <EmptyDescription>
+              {showSavedOnly
+                ? "Save movies with the heart button and find them here."
+                : "Try another search or choose a different genre."}
+            </EmptyDescription>
+
+            <ResetButton
+              onClick={() => {
+                setSearch("");
+                setActiveGenre("All Movies");
+                setShowSavedOnly(false);
+                setCurrentPage(1);
+              }}
+            >
+              Explore all movies
+            </ResetButton>
+          </EmptyState>
+        )}
+
+        {totalPages > 1 && (
+          <Pagination>
+            <PageButton
+              aria-label="Previous page"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((page) => page - 1)}
+            >
+              <FaChevronLeft />
+            </PageButton>
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (page) => (
+                <PageButton
+                  key={page}
+                  $active={currentPage === page}
+                  onClick={() => setCurrentPage(page)}
+                >
+                  {page}
+                </PageButton>
+              )
+            )}
+
+            <PageButton
+              aria-label="Next page"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((page) => page + 1)}
+            >
+              <FaChevronRight />
+            </PageButton>
+          </Pagination>
+        )}
+      </Main>
+
+      <Footer>
+        <Brand to="/movies">
+          <Logo>
+            <FaFilm />
+          </Logo>
+          <BrandName>
+            Movie<span>Vault</span>
+          </BrandName>
+        </Brand>
+        <FooterText>Find a story worth staying up for.</FooterText>
+      </Footer>
+    </Page>
+  );
+}
+
+export default Movies;
+
+// ---------- Styled Components ----------
+
+const Page = styled.div`
+  min-height: 100vh;
+  background: #090910;
+  color: #f5f3ff;
+`;
+
+const Navbar = styled.header`
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #292335;
+  background: #0c0a14ee;
+  backdrop-filter: blur(18px);
+`;
+
+const NavInner = styled.div`
+  width: min(1240px, 100%);
+  min-height: 76px;
+  margin: 0 auto;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+
+  @media (max-width: 650px) {
+    padding: 14px 18px;
+    min-height: auto;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+`;
+
+const Brand = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+  text-decoration: none;
+  flex-shrink: 0;
+`;
+
+const Logo = styled.div`
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #a855f7, #6d28d9);
+  font-size: 18px;
+`;
+
+const BrandName = styled.span`
+  font-size: 23px;
+  font-weight: 750;
+  letter-spacing: -0.8px;
+
+  span {
+    color: #c4a5ff;
+  }
+`;
+
+const NavLinks = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex: 1;
+
+  @media (max-width: 650px) {
+    order: 3;
+    flex-basis: 100%;
+    gap: 20px;
+    overflow-x: auto;
+  }
+`;
+
+const NavLink = styled(Link)`
+  padding: 10px 0;
+  color: ${({ $active }) => ($active ? "#c4a5ff" : "#a5a0b5")};
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    color: white;
+  }
+`;
+
+const NavButton = styled.button`
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: ${({ $active }) => ($active ? "#c4a5ff" : "#a5a0b5")};
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: white;
+  }
+`;
+
+const SavedCount = styled.span`
+  min-width: 20px;
+  padding: 2px 6px;
+  border-radius: 20px;
+  background: #8b5cf633;
+  color: #d8b4fe;
+  font-size: 11px;
+  text-align: center;
+`;
+
+const ProfileIcon = styled.div`
+  display: grid;
+  place-items: center;
+  color: #c4a5ff;
+  font-size: 27px;
+`;
+
+const Main = styled.main`
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 36px 28px 72px;
+
+  @media (max-width: 650px) {
+    padding: 28px 18px 50px;
+  }
+`;
+
+const Hero = styled.section`
+  position: relative;
+  min-height: 270px;
+  padding: 42px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  border: 1px solid #34264c;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 90% 15%, #7c3aed42, transparent 38%),
+    linear-gradient(115deg, #171126, #100d1b 70%);
+  margin-bottom: 48px;
+
+  @media (max-width: 650px) {
+    min-height: 0;
+    padding: 28px 20px;
+    margin-bottom: 36px;
+  }
+`;
+
+const HeroContent = styled.div`
+  position: relative;
+  z-index: 2;
+  max-width: 690px;
+  width: 100%;
+`;
+
+const Eyebrow = styled.p`
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 18px;
+  color: #c4a5ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+`;
+
+const HeroTitle = styled.h1`
+  margin: 0;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+
+  @media (max-width: 420px) {
+    font-size: 30px;
+    letter-spacing: -0.8px;
+  }
+`;
+
+const GradientText = styled.span`
+  display: block;
+  background: linear-gradient(90deg, #c4a5ff, #a855f7, #e9d5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+`;
+
+const HeroDescription = styled.p`
+  max-width: 480px;
+  margin: 16px 0 24px;
+  color: #aaa5ba;
+  font-size: 14px;
+  line-height: 1.7;
+`;
+
+const SearchBox = styled.label`
+  width: min(470px, 100%);
+  min-height: 48px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #403550;
+  border-radius: 12px;
+  background: #0b0913;
+  color: #a5a0b5;
+
+  &:focus-within {
+    border-color: #a855f7;
+    box-shadow: 0 0 0 3px #a855f71a;
+  }
+`;
+
+const SearchInput = styled.input`
+  width: 100%;
+  min-width: 0;
+  padding: 14px 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font: inherit;
+  font-size: 13px;
+
+  &::placeholder {
+    color: #777185;
+  }
+`;
+
+const ClearButton = styled.button`
+  border: none;
+  background: transparent;
+  color: #c4a5ff;
+  font-size: 12px;
+  cursor: pointer;
+`;
+
+const HeroDecoration = styled.div`
+  position: absolute;
+  right: 35px;
+  top: 0;
+  bottom: 0;
+  width: 300px;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+
+  @media (max-width: 900px) {
+    opacity: 0.15;
+    right: -65px;
+  }
+
+  @media (max-width: 650px) {
+    display: none;
+  }
+`;
+
+const DecorationCircle = styled.div`
+  width: 240px;
+  height: 240px;
+  position: absolute;
+  border: 1px solid #c4a5ff40;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 25px #a855f70a,
+    0 0 0 55px #a855f708;
+`;
+
+const DecorationFilm = styled.div`
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 120px;
+  border: 1px solid #c4a5ff45;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #8b5cf62c, #1e1533);
+  color: #d8b4fe;
+  font-size: 55px;
+  transform: rotate(-10deg);
+`;
+
+const DecorationText = styled.span`
+  position: absolute;
+  bottom: 25px;
+  color: #8b7aa8;
+  font-size: 10px;
+  letter-spacing: 2px;
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+`;
+
+const SectionTitle = styled.h2`
+  margin: 0 0 7px;
+  font-size: 25px;
+  letter-spacing: -0.5px;
+`;
+
+const SectionDescription = styled.p`
+  margin: 0;
+  color: #888299;
+  font-size: 13px;
+`;
+
+const GenreList = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #302742;
+  }
+`;
+
+const GenreButton = styled.button`
+  flex-shrink: 0;
+  padding: 10px 17px;
+  border: 1px solid ${({ $active }) => ($active ? "#8b5cf6" : "#30283f")};
+  border-radius: 30px;
+  background: ${({ $active }) =>
+    $active ? "linear-gradient(135deg, #9333ea, #6d28d9)" : "#14111e"};
+  color: ${({ $active }) => ($active ? "#fff" : "#aaa5ba")};
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    border-color: #a855f7;
+    color: white;
+  }
+`;
+
+const MovieGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px 20px;
+
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: 700px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px 14px;
+  }
+
+  @media (max-width: 360px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const MovieCard = styled.article`
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #282238;
+  border-radius: 15px;
+  background: #13111c;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: #60418a;
+  }
+`;
+
+const PosterWrapper = styled.div`
+  position: relative;
+  aspect-ratio: 3 / 4.2;
+  overflow: hidden;
+  background: linear-gradient(135deg, #302044, #0d0b15);
+`;
+
+const Poster = styled.img`
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+
+  ${MovieCard}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const PosterOverlay = styled.div`
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #0909104a 0%,
+    transparent 35%,
+    #090910bd 100%
+  );
+  pointer-events: none;
+`;
+
+const Rating = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 11px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border: 1px solid #ffffff20;
+  border-radius: 8px;
+  background: #090910b8;
+  color: #f5d77c;
+  font-size: 11px;
+  font-weight: 700;
+
+  svg {
+    font-size: 10px;
+  }
+`;
+
+const SaveButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #ffffff30;
+  border-radius: 50%;
+  background: #090910b8;
+  color: ${({ $saved }) => ($saved ? "#fb7185" : "#ffffff")};
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    background: #9333ea;
+    color: white;
+  }
+`;
+
+const PosterBottom = styled.div`
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+`;
+
+const GenreTag = styled.span`
+  display: inline-block;
+  padding: 6px 9px;
+  border: 1px solid #c4a5ff3d;
+  border-radius: 7px;
+  background: #171126c9;
+  color: #e0d0ff;
+  font-size: 10px;
+  font-weight: 600;
+`;
+
+const MovieInfo = styled.div`
+  padding: 15px 13px 17px;
+`;
+
+const MovieTitle = styled.h3`
+  margin: 0 0 9px;
+  overflow-wrap: anywhere;
+  color: #f5f3ff;
+  font-size: 15px;
+  line-height: 1.4;
+`;
+
+const MovieMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #9891aa;
+  font-size: 11px;
+`;
+
+const MetaDot = styled.span`
+  width: 3px;
+  height: 3px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #8b5cf6;
+`;
+
+const MovieDescription = styled.p`
+  margin: 12px 0 0;
+  color: #aaa5ba;
+  font-size: 12px;
+  line-height: 1.5;
+`;
+
+const EmptyState = styled.div`
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px dashed #393049;
+  border-radius: 18px;
+  background: #11101a;
+`;
+
+const EmptyIcon = styled.div`
+  margin-bottom: 18px;
+  color: #a855f7;
+  font-size: 38px;
+`;
+
+const EmptyTitle = styled.h3`
+  margin: 0 0 10px;
+  font-size: 20px;
+`;
+
+const EmptyDescription = styled.p`
+  max-width: 360px;
+  margin: 0;
+  color: #aaa5ba;
+  font-size: 13px;
+  line-height: 1.6;
+`;
+
+const ResetButton = styled.button`
+  margin-top: 22px;
+  padding: 11px 17px;
+  border: none;
+  border-radius: 9px;
+  background: #7c3aed;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: #9333ea;
+  }
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 42px;
+`;
+
+const PageButton = styled.button`
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  display: grid;
+  place-items: center;
+  border: 1px solid ${({ $active }) => ($active ? "#8b5cf6" : "#302742")};
+  border-radius: 10px;
+  background: ${({ $active }) => ($active ? "#7c3aed" : "#14111e")};
+  color: ${({ $active }) => ($active ? "#ffffff" : "#aaa5ba")};
+  font-size: 13px;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:hover:not(:disabled) {
+    border-color: #a855f7;
+    color: white;
+  }
+`;
+
+const Footer = styled.footer`
+  min-height: 90px;
+  padding: 22px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-top: 1px solid #292335;
+
+  @media (max-width: 500px) {
+    flex-direction: column;
+    justify-content: center;
+    padding: 24px 18px;
+  }
+`;
+
+const FooterText = styled.p`
+  margin: 0;
+  color: #777185;
+  font-size: 12px;
+`;
